@@ -10,7 +10,7 @@ export const getOneContact = async (req, res) => {
     const { id } = req.params;
     const contact = await contactsService.getContactById(id);
     if (!contact) {
-        return res.json(HttpError(404));
+        return res.status(404).json(HttpError(404));
     } else {
         return res.json(contact);
     }
@@ -30,7 +30,7 @@ export const createContact = async (req, res) => {
     const { name, email, phone } = req.body;
     
     const newContact = await contactsService.addContact(name, email, phone);
-    return res.json(newContact).status(201);
+    return res.status(201).json(newContact);
 };
 
 export const updateContact = async (req, res) => {
@@ -38,7 +38,7 @@ export const updateContact = async (req, res) => {
     const { name, email, phone } = req.body;
 
     if (!name && !email && !phone) {
-        return res.json(HttpError(400, "Body must have at least one field"));
+        return res.status(400).json({message: "Body must have at least one field"});
     }
 
     const updatedContact = await contactsService.updateContact(id, name, email, phone);
