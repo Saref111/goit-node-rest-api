@@ -49,14 +49,15 @@ async function updateContact(contactId, name, email, phone) {
 }
 
 async function removeContact(contactId) {
-  const result = await Contact.findByIdAndRemove(contactId);
+  const result = await Contact.findByIdAndDelete(contactId);
   return { message: "Contact removed", result };
 }
 
-async function updateStatusContact(contactId, body) {
+async function updateStatusContact(contactId, {favorite}) {
+  console.log(contactId, favorite);
   const updatedContact = await Contact.findByIdAndUpdate(
     contactId,
-    { favorite: body.favorite },
+    { favorite: Boolean(favorite) },
     { new: true }
   );
   return updatedContact;

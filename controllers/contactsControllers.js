@@ -50,14 +50,10 @@ export const updateContact = async (req, res) => {
 };
 
 export const updateStatusContact = async (req, res) => {
-    const { contactId } = req.params;
+    const { id } = req.params;
     const { favorite } = req.body;
-
-    if (favorite === undefined || typeof favorite !== 'boolean') {
-      return res.status(400).json({ message: 'Missing field favorite' });
-    }
   
-    const updatedContact = await contactsServices.updateStatusContact(contactId, { favorite });
+    const updatedContact = await contactsService.updateStatusContact(id, { favorite });
   
     if (!updatedContact) {
       return res.status(404).json({ message: 'Not found' });
