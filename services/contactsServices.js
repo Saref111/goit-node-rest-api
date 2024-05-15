@@ -43,7 +43,13 @@ async function updateContact(contactId, name, email, phone) {
   );
   if (!contactToUpdate) return null;
 
-  const updatedContact = { ...contactToUpdate, name, email, phone };
+  const updatedContact = { 
+    ...contactToUpdate, 
+    name: name || contactToUpdate.name, 
+    email: email || contactToUpdate.email, 
+    phone: phone || contactToUpdate.phone 
+  };
+  
   const newContacts = contacts.map((contact) =>
     contact.id.toString() === contactId.toString() ? updatedContact : contact
   );
