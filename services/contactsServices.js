@@ -1,60 +1,72 @@
-import { promises as fs } from "fs";
-import path from "path";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
-const contactsPath = path.join("db", "contacts.json");
+const uri = process.env.DB_HOST;
+
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+const contactSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Set name for contact"],
+  },
+  email: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
+  favorite: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const Contact = mongoose.model("Contact", contactSchema);
 
 async function getAllContacts() {
-  const list = await fs.readFile(contactsPath, "utf-8");
-  return JSON.parse(list);
+  return await Contact.find();
 }
 
 async function getContactById(contactId) {
-  const contacts = await getAllContacts();
-  const contact = contacts.find(({ id }) => id === contactId);
-  return contact || null;
-}
-
-async function removeContact(contactId) {
-  const contacts = await getAllContacts();
-  const removedContact = contacts.find(
-    ({ id }) => id.toString() === contactId.toString()
-  );
-  if (!removedContact) return null;
-
-  const newContacts = contacts.filter(
-    ({ id }) => id.toString() !== contactId.toString()
-  );
-  await fs.writeFile(contactsPath, JSON.stringify(newContacts));
-  return removedContact;
+  return await Contact.findById(contactId);
 }
 
 async function addContact(name, email, phone) {
-  const contacts = await getAllContacts();
-  const newContact = { id: contacts.length + 1, name, email, phone };
-  const newContacts = [...contacts, newContact];
-  await fs.writeFile(contactsPath, JSON.stringify(newContacts));
+  const newContact = new Contact({ name, email, phone });
+  await newContact.save();
   return newContact;
 }
 
 async function updateContact(contactId, name, email, phone) {
-  const contacts = await getAllContacts();
-  const contactToUpdate = contacts.find(
-    ({ id }) => id.toString() === contactId.toString()
+  const updatedContact = await Contact.findByIdAndUpdate(
+    contactId,
+    { name, email, phone },
+    { new: true }
   );
-  if (!contactToUpdate) return null;
-
-  const updatedContact = { 
-    ...contactToUpdate, 
-    name: name || contactToUpdate.name, 
-    email: email || contactToUpdate.email, 
-    phone: phone || contactToUpdate.phone 
-  };
-  
-  const newContacts = contacts.map((contact) =>
-    contact.id.toString() === contactId.toString() ? updatedContact : contact
-  );
-  await fs.writeFile(contactsPath, JSON.stringify(newContacts));
   return updatedContact;
 }
 
-export default { getAllContacts, getContactById, removeContact, addContact, updateContact };
+async function removeContact(contactId) {
+  const result = await Contact.findByIdAndRemove(contactId);
+  return { message: "Contact removed", result };
+}
+
+async function updateStatusContact(contactId, body) {
+  const updatedContact = await Contact.findByIdAndUpdate(
+    contactId,
+    { favorite: body.favorite },
+    { new: true }
+  );
+  return updatedContact;
+}
+
+export default {
+  getAllContacts,
+  getContactById,
+  removeContact,
+  addContact,
+  updateContact,
+  updateStatusContact,
+};
