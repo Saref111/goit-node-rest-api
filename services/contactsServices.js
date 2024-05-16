@@ -36,8 +36,8 @@ async function getContactById(contactId) {
   return await Contact.findById(contactId);
 }
 
-async function addContact(name, email, phone) {
-  const newContact = new Contact({ name, email, phone });
+async function addContact(name, email, phone, favorite = false) {
+  const newContact = new Contact({ name, email, phone, favorite });
   await newContact.save();
   return newContact;
 }
