@@ -52,8 +52,8 @@ async function updateContact(contactId, name, email, phone) {
 }
 
 async function removeContact(contactId) {
-  const result = await Contact.findByIdAndDelete(contactId);
-  return { message: "Contact removed", result };
+  const removedContact = await Contact.findByIdAndDelete(contactId);
+  return removedContact;
 }
 
 async function updateStatusContact(contactId, {favorite}) {
