@@ -21,7 +21,7 @@ const contactSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-});
+}, { versionKey: false });
 
 const Contact = mongoose.model("Contact", contactSchema);
 
@@ -30,6 +30,9 @@ async function getAllContacts() {
 }
 
 async function getContactById(contactId) {
+  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    return null;
+  }
   return await Contact.findById(contactId);
 }
 
@@ -54,7 +57,6 @@ async function removeContact(contactId) {
 }
 
 async function updateStatusContact(contactId, {favorite}) {
-  console.log(contactId, favorite);
   const updatedContact = await Contact.findByIdAndUpdate(
     contactId,
     { favorite: Boolean(favorite) },
