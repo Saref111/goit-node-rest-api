@@ -30,7 +30,7 @@ async function getAllContacts() {
 }
 
 async function getContactById(contactId) {
-  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+  if (!mongoose.isValidObjectId(contactId)) {
     return null;
   }
   return await Contact.findById(contactId);
