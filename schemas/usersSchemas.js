@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+// Method comparePassword should be added to the userSchema
+
 export const userSchema = new mongoose.Schema(
   {
     password: {
@@ -23,3 +25,7 @@ export const userSchema = new mongoose.Schema(
   },
   { versionKey: false }
 );
+
+userSchema.methods.comparePassword = function (password) {
+  return password === this.password;
+}
