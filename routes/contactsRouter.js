@@ -14,19 +14,26 @@ import {
   updateContactSchema,
   updateContactStatusSchema,
 } from "../schemas/contactsValidationSchemas.js";
+import { authenticateToken } from "../helpers/authenticateToken.js";
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", getAllContacts);
+contactsRouter.get("/", authenticateToken, getAllContacts);
 
-contactsRouter.get("/:id", validateId, getOneContact);
+contactsRouter.get("/:id", authenticateToken, validateId, getOneContact);
 
-contactsRouter.delete("/:id", validateId, deleteContact);
+contactsRouter.delete("/:id", authenticateToken, validateId, deleteContact);
 
-contactsRouter.post("/", validateBody(createContactSchema), createContact);
+contactsRouter.post(
+  "/",
+  authenticateToken,
+  validateBody(createContactSchema),
+  createContact
+);
 
 contactsRouter.put(
   "/:id",
+  authenticateToken,
   validateId,
   validateBody(updateContactSchema),
   updateContact
@@ -34,6 +41,7 @@ contactsRouter.put(
 
 contactsRouter.patch(
   "/:id/favorite",
+  authenticateToken,
   validateId,
   validateBody(updateContactStatusSchema),
   updateStatusContact

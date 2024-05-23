@@ -19,8 +19,14 @@ const createToken = async (user) => {
     await User.updateOne({ _id: user._id }, { token });
     return token;
 };
+
+const updateToken = async (id, token) => {
+    return await User.updateOne({ _id: id }, { token });
+};
+
 export default {
     createUser,
     findUserByEmail,
     createToken,
+    updateToken,
 };

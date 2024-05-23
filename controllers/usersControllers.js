@@ -19,3 +19,21 @@ export const login = async (req, res) => {
     const token = await usersService.createToken(user);
     return res.status(200).json({ token, user: { email: user.email, subscription: user.subscription } });
 };
+
+export const logout = async (req, res) => {
+    const user = await usersService.findUserById(req.user._id);
+    if (!user) {
+        return res.status(401).json({ message: "Not authorized" });
+    }
+    await usersService.updateToken(user._id, null);
+    return res.status(204).json();
+};
+
+export const getCurrentUser = async (req, res) => {
+    const user = await usersService.findUserById(req.user._id);
+    if (!user) {
+        return res.status(401).json({ message: "Not authorized" });
+    }
+
+    return res.status(200).json({ user: { email: user.email, subscription: user.subscription } });
+};
