@@ -2,7 +2,14 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import contactsRouter from "./routes/contactsRouter.js";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 
+dotenv.config();
+
+const uri = process.env.DB_HOST;
+
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const app = express();
 

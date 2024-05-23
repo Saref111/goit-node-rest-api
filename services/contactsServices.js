@@ -1,27 +1,6 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-dotenv.config();
 
-const uri = process.env.DB_HOST;
-
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-const contactSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Set name for contact"],
-  },
-  email: {
-    type: String,
-  },
-  phone: {
-    type: String,
-  },
-  favorite: {
-    type: Boolean,
-    default: false,
-  },
-}, { versionKey: false });
+import { contactSchema } from "../schemas/contactsShemas.js";
 
 const Contact = mongoose.model("Contact", contactSchema);
 
@@ -53,7 +32,7 @@ async function removeContact(contactId) {
   return removedContact;
 }
 
-async function updateStatusContact(contactId, {favorite}) {
+async function updateStatusContact(contactId, { favorite }) {
   const updatedContact = await Contact.findByIdAndUpdate(
     contactId,
     { favorite: Boolean(favorite) },
