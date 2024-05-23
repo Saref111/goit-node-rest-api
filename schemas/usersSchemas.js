@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import bCrypt from "bcryptjs";
 
 export const userSchema = new mongoose.Schema(
   {
@@ -25,10 +24,6 @@ export const userSchema = new mongoose.Schema(
   { versionKey: false }
 );
 
-userSchema.methods.setPassword = function (password) {
-  this.password = bCrypt.hashSync(password, bCrypt.genSaltSync(6));
-};
-
 userSchema.methods.validPassword = function (password) {
-  return bCrypt.compareSync(password, this.password);
+  return password === this.password;
 };

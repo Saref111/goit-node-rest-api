@@ -14,6 +14,10 @@ const findUserByEmail = async (email) => {
     return await User.findOne({ email });
 };
 
+const findUserById = async (id) => {
+    return await User.findOne({ _id: id });
+};
+
 const createToken = async (user) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     await User.updateOne({ _id: user._id }, { token });
@@ -29,4 +33,5 @@ export default {
     findUserByEmail,
     createToken,
     updateToken,
+    findUserById,
 };
