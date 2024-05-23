@@ -26,9 +26,9 @@ export const deleteContact = async (req, res) => {
 };
 
 export const createContact = async (req, res) => {
-    const { name, email, phone } = req.body;
+    const { name, email, phone, favorite } = req.body;
     
-    const newContact = await contactsService.addContact(name, email, phone);
+    const newContact = await contactsService.addContact(name, email, phone, favorite);
     return res.status(201).json(newContact);
 };
 
@@ -48,3 +48,16 @@ export const updateContact = async (req, res) => {
         return res.json(updatedContact);
     }
 };
+
+export const updateStatusContact = async (req, res) => {
+    const { id } = req.params;
+    const { favorite } = req.body;
+  
+    const updatedContact = await contactsService.updateStatusContact(id, { favorite });
+  
+    if (!updatedContact) {
+      return res.status(404).json({ message: 'Not found' });
+    }
+  
+    res.json(updatedContact);
+  }
