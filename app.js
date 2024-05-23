@@ -5,6 +5,7 @@ import contactsRouter from "./routes/contactsRouter.js";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import usersRouter from "./routes/usersRouter.js";
+import './config/config-passport.js';
 
 dotenv.config();
 

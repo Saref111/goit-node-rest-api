@@ -13,7 +13,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await usersService.findUserByEmail(email);
-    if (!user || !user.comparePassword(password)) {
+    if (!user || !user.validPassword(password)) {
         return res.status(401).json({ message: "Email or password is wrong" });
     }
     const token = await usersService.createToken(user);
