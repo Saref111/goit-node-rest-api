@@ -1,8 +1,18 @@
 import mongoose from "mongoose"; 
 import jwt from "jsonwebtoken";
-import { userSchema } from "../schemas/usersSchemas.js";
+import { userSchema, tokenBlacklistSchema } from "../schemas/usersSchemas.js";
 
 const User = mongoose.model("User", userSchema);
+const TokenBlacklist = mongoose.model("TokenBlacklist", tokenBlacklistSchema);
+
+const blacklistToken = async (token) => {
+  const blacklistedToken = new TokenBlacklist({ token });
+  await blacklistedToken.save();
+};
+
+const isTokenBlacklisted = async (token) => {
+    return await TokenBlacklist.findOne({ token }) !== null;
+  };
 
 const createUser = async (email, password) => {
   const newUser = new User({ email, password });
@@ -34,4 +44,6 @@ export default {
     createToken,
     updateToken,
     findUserById,
+    blacklistToken,
+    isTokenBlacklisted,
 };

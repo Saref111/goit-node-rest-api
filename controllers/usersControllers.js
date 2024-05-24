@@ -1,3 +1,4 @@
+import { getTokenfromReq } from "../helpers/getTokenfromReq.js";
 import usersService from "../services/usersServices.js";
 
 export const register = async (req, res) => {
@@ -21,10 +22,12 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-    const user = await usersService.findUserById(req.user._id);
+    const user = await usersService.findUserById(req.user.id);
+    const token = getTokenfromReq(req);
     if (!user) {
         return res.status(401).json({ message: "Not authorized" });
     }
+    await usersService.blacklistToken(token);
     await usersService.updateToken(user._id, null);
     return res.status(204).json();
 };

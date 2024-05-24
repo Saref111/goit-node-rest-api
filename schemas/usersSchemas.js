@@ -27,3 +27,10 @@ export const userSchema = new mongoose.Schema(
 userSchema.methods.validPassword = function (password) {
   return password === this.password;
 };
+
+export const tokenBlacklistSchema = new mongoose.Schema({
+  token: {
+    type: String,
+    required: true,
+  },
+});
