@@ -35,5 +35,5 @@ export const getCurrentUser = async (req, res) => {
         return res.status(401).json({ message: "Not authorized" });
     }
 
-    return res.status(200).json({ user: { email: user.email, subscription: user.subscription } });
+    return res.status(200).json({ email: user.email, subscription: user.subscription });
 };

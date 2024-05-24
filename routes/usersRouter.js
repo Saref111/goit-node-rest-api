@@ -12,7 +12,7 @@ usersRouter.post("/register", validateBody(userValidationSchema), register);
 
 usersRouter.post("/login", validateBody(userValidationSchema), login);
 
-usersRouter.get("/logout", authenticateToken, logout);
+usersRouter.post("/logout", authenticateToken, logout);
 
 usersRouter.get("/current", authenticateToken, getCurrentUser);
 

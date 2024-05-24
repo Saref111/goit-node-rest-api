@@ -4,16 +4,16 @@ import { contactSchema } from "../schemas/contactsShemas.js";
 
 const Contact = mongoose.model("Contact", contactSchema);
 
-async function getAllContacts() {
-  return await Contact.find();
+async function getAllContacts(userId) {
+  return await Contact.find({owner: userId});
 }
 
 async function getContactById(contactId) {
   return await Contact.findById(contactId);
 }
 
-async function addContact(name, email, phone, favorite = false) {
-  const newContact = new Contact({ name, email, phone, favorite });
+async function addContact(name, email, phone, favorite = false, owner) {
+  const newContact = new Contact({ name, email, phone, favorite, owner });
   await newContact.save();
   return newContact;
 }

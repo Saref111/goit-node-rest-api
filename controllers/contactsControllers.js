@@ -1,7 +1,8 @@
 import contactsService from "../services/contactsServices.js";
 
 export const getAllContacts = async (req, res) => {
-    const contacts = await contactsService.getAllContacts();
+    const { user } = req;
+    const contacts = await contactsService.getAllContacts(user.id);
     return res.json(contacts);
 };
 
@@ -28,7 +29,7 @@ export const deleteContact = async (req, res) => {
 export const createContact = async (req, res) => {
     const { name, email, phone, favorite } = req.body;
     
-    const newContact = await contactsService.addContact(name, email, phone, favorite);
+    const newContact = await contactsService.addContact(name, email, phone, favorite, req.user.id);
     return res.status(201).json(newContact);
 };
 
