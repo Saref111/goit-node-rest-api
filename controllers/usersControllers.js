@@ -33,7 +33,6 @@ export const logout = async (req, res) => {
 };
 
 export const getCurrentUser = async (req, res) => {
-    console.log(req.user);
     const user = await usersService.findUserById(req.user._id);
     if (!user) {
         return res.status(401).json({ message: "Not authorized" });
