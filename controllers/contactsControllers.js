@@ -2,12 +2,15 @@ import contactsService from "../services/contactsServices.js";
 
 export const getAllContacts = async (req, res) => {
     const { user } = req;
-    const contacts = await contactsService.getAllContacts(user.id);
+    const {page = 1, limit = 20} = req.query;
+    const skip = (page - 1) * limit;
+    const contacts = await contactsService.getAllContacts(user.id, skip, +limit);
     return res.json(contacts);
 };
 
 export const getOneContact = async (req, res) => {
     const { id } = req.params;
+
     const contact = await contactsService.getContactById(id);
     if (!contact) {
         return res.status(404).json({message: "Not found"});

@@ -38,6 +38,10 @@ const updateToken = async (id, token) => {
     return await User.updateOne({ _id: id }, { token });
 };
 
+const updateSubscription = async (id, subscription) => {
+    return await User.findByIdAndUpdate(id, { subscription}, { new: true });
+};
+
 export default {
     createUser,
     findUserByEmail,
@@ -46,4 +50,5 @@ export default {
     findUserById,
     blacklistToken,
     isTokenBlacklisted,
+    updateSubscription,
 };

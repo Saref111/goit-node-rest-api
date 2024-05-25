@@ -4,8 +4,12 @@ import { contactSchema } from "../schemas/contactsShemas.js";
 
 const Contact = mongoose.model("Contact", contactSchema);
 
-async function getAllContacts(userId) {
-  return await Contact.find({owner: userId});
+async function getAllContacts(userId, skip, limit, favorite) {
+  const entityFields = { owner: userId };
+  if (favorite !== undefined && favorite !== null) {
+    entityFields.favorite = favorite;
+  }
+  return await Contact.find(entityFields).skip(skip).limit(limit);
 }
 
 async function getContactById(contactId) {

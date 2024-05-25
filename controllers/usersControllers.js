@@ -33,10 +33,20 @@ export const logout = async (req, res) => {
 };
 
 export const getCurrentUser = async (req, res) => {
+    console.log(req.user);
     const user = await usersService.findUserById(req.user._id);
     if (!user) {
         return res.status(401).json({ message: "Not authorized" });
     }
-
+    
     return res.status(200).json({ email: user.email, subscription: user.subscription });
+};
+
+export const updateSubscription = async (req, res) => {
+    const user = await usersService.findUserById(req.user._id);
+    if (!user) {
+        return res.status(401).json({ message: "Not authorized" });
+    }
+    const updatedUser = await usersService.updateSubscription(user._id, req.body.subscription);
+    return res.status(200).json({ email: updatedUser.email, subscription: updatedUser.subscription });
 };

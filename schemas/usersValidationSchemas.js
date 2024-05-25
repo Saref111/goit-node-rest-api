@@ -6,3 +6,7 @@ export const userValidationSchema = Joi.object({
     subscription: Joi.string().valid("starter", "pro", "business"),
     token: Joi.string(),
 });
+
+export const subscriptionValidationSchema = Joi.object({
+    subscription: Joi.string().valid("starter", "pro", "business").required(),
+});
