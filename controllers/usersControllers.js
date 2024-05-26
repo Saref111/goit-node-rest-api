@@ -22,7 +22,7 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-    const user = await usersService.findUserById(req.user.id);
+    const user = await usersService.findUserById(req.user._id);
     const token = getTokenfromReq(req);
     if (!user) {
         return res.status(401).json({ message: "Not authorized" });

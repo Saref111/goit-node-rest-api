@@ -12,33 +12,33 @@ async function getAllContacts(userId, skip, limit, favorite) {
   return await Contact.find(entityFields).skip(skip).limit(limit);
 }
 
-async function getContactById(contactId) {
-  return await Contact.findById(contactId);
+async function getContactById(contactId, ownerId) {
+  return await Contact.findOne({_id: contactId, owner: ownerId});
 }
 
-async function addContact(name, email, phone, favorite = false, owner) {
+async function addContact({name, email, phone, favorite = false, owner}) {
   const newContact = new Contact({ name, email, phone, favorite, owner });
   await newContact.save();
   return newContact;
 }
 
-async function updateContact(contactId, name, email, phone) {
-  const updatedContact = await Contact.findByIdAndUpdate(
-    contactId,
+async function updateContact({contactId, name, email, phone, owner}) {
+  const updatedContact = await Contact.findOneAndUpdate(
+    {_id: contactId, owner: owner},
     { name, email, phone },
     { new: true }
   );
   return updatedContact;
 }
 
-async function removeContact(contactId) {
-  const removedContact = await Contact.findByIdAndDelete(contactId);
+async function removeContact(contactId, ownerId) {
+  const removedContact = await Contact.findOneAndDelete({_id: contactId, owner: ownerId});
   return removedContact;
 }
 
-async function updateStatusContact(contactId, { favorite }) {
-  const updatedContact = await Contact.findByIdAndUpdate(
-    contactId,
+async function updateStatusContact(contactId, ownerId,  favorite) {
+  const updatedContact = await Contact.findOneAndUpdate(
+    {_id: contactId, owner: ownerId},
     { favorite: Boolean(favorite) },
     { new: true }
   );
