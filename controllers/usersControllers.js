@@ -1,3 +1,5 @@
+import Jimp from "jimp";
+import path from "path";
 import { getTokenfromReq } from "../helpers/getTokenfromReq.js";
 import usersService from "../services/usersServices.js";
 
@@ -47,13 +49,11 @@ export const getCurrentUser = async (req, res) => {
     return res.status(401).json({ message: "Not authorized" });
   }
 
-  return res
-    .status(200)
-    .json({
-      email: user.email,
-      subscription: user.subscription,
-      avararURL: user.avatarURL,
-    });
+  return res.status(200).json({
+    email: user.email,
+    subscription: user.subscription,
+    avararURL: user.avatarURL,
+  });
 };
 
 export const updateSubscription = async (req, res) => {
@@ -68,4 +68,20 @@ export const updateSubscription = async (req, res) => {
   return res
     .status(200)
     .json({ email: updatedUser.email, subscription: updatedUser.subscription });
+};
+
+export const updateAvatar = async (req, res) => {
+    const user = await usersService.findUserById(req.user._id);
+    if (!user) {
+        return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const newAvatarPath = path.join("public", "avatars", req.file.filename + ".jpg").replace(/\\/g, "/");
+
+    const newAvatar = await Jimp.read(req.file.path)
+    await newAvatar.cover(250, 250)
+        .writeAsync(newAvatarPath);
+
+    const updatedUser = await usersService.updateAvatar(user._id, newAvatarPath.replace("public", ""));
+    return res.status(200).json({ avatarURL: updatedUser.avatarURL });
 };
