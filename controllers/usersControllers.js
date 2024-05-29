@@ -2,6 +2,7 @@ import Jimp from "jimp";
 import path from "path";
 import { getTokenfromReq } from "../helpers/getTokenfromReq.js";
 import usersService from "../services/usersServices.js";
+import fs from "fs/promises";
 
 export const register = async (req, res) => {
   const { email, password } = req.body;
@@ -76,6 +77,10 @@ export const updateAvatar = async (req, res) => {
         return res.status(401).json({ message: "Not authorized" });
     }
 
+    if (!req.file) {
+        return res.status(400).json({ message: "No file provided" });
+    }
+
     const newAvatarPath = path.join("public", "avatars", req.file.filename + ".jpg").replace(/\\/g, "/");
 
     const newAvatar = await Jimp.read(req.file.path)
@@ -83,5 +88,8 @@ export const updateAvatar = async (req, res) => {
         .writeAsync(newAvatarPath);
 
     const updatedUser = await usersService.updateAvatar(user._id, newAvatarPath.replace("public", ""));
+    
+    await fs.unlink(req.file.path);
+
     return res.status(200).json({ avatarURL: updatedUser.avatarURL });
 };
