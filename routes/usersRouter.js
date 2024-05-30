@@ -12,6 +12,7 @@ import {
   getCurrentUser,
   updateSubscription,
   updateAvatar,
+  verifyEmail,
 } from "../controllers/usersControllers.js";
 import { authenticateToken } from "../helpers/authenticateToken.js";
 
@@ -40,5 +41,7 @@ usersRouter.patch(
   upload.single("avatar"),
   updateAvatar
 );
+
+usersRouter.get("/verify/:verificationToken", verifyEmail);
 
 export default usersRouter;

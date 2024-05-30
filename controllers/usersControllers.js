@@ -11,6 +11,8 @@ export const register = async (req, res) => {
     return res.status(409).json({ message: "Email in use" });
   }
   const newUser = await usersService.createUser(email, password);
+  await usersService.sendEmail(newUser);
+  
   return res.status(201).json({
     user: { email: newUser.email, subscription: newUser.subscription },
   });
@@ -92,4 +94,14 @@ export const updateAvatar = async (req, res) => {
     await fs.unlink(req.file.path);
 
     return res.status(200).json({ avatarURL: updatedUser.avatarURL });
+};
+
+export const verifyEmail = async (req, res) => {
+    const user = await usersService.findUserByVerificationToken(req.params.verificationToken);
+    if (!user || user.verify) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    await usersService.verifyUser(user._id);
+    return res.status(200).json({ message: "Verification successful" });
 };
