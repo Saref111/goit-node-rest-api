@@ -1,4 +1,5 @@
-import mongoose from "mongoose"; 
+import mongoose from "mongoose";
+import gravatar from "gravatar";
 import jwt from "jsonwebtoken";
 import { userSchema, tokenBlacklistSchema } from "../schemas/usersSchemas.js";
 
@@ -11,44 +12,50 @@ const blacklistToken = async (token) => {
 };
 
 const isTokenBlacklisted = async (token) => {
-    return await TokenBlacklist.findOne({ token }) !== null;
-  };
+  return (await TokenBlacklist.findOne({ token })) !== null;
+};
 
 const createUser = async (email, password) => {
-  const newUser = new User({ email, password });
+  const avatarURL = gravatar.url(email, { s: "250" }, true);
+  const newUser = new User({ email, password, avatarURL });
   await newUser.save();
   return newUser;
 };
 
 const findUserByEmail = async (email) => {
-    return await User.findOne({ email });
+  return await User.findOne({ email });
 };
 
 const findUserById = async (id) => {
-    return await User.findOne({ _id: id });
+  return await User.findOne({ _id: id });
 };
 
 const createToken = async (user) => {
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    await User.updateOne({ _id: user._id }, { token });
-    return token;
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+  await User.updateOne({ _id: user._id }, { token });
+  return token;
 };
 
 const updateToken = async (id, token) => {
-    return await User.updateOne({ _id: id }, { token });
+  return await User.updateOne({ _id: id }, { token });
 };
 
 const updateSubscription = async (id, subscription) => {
-    return await User.findByIdAndUpdate(id, { subscription}, { new: true });
+  return await User.findByIdAndUpdate(id, { subscription }, { new: true });
+};
+
+const updateAvatar = async (id, avatarURL) => {
+  return await User.findByIdAndUpdate(id, { avatarURL }, { new: true });
 };
 
 export default {
-    createUser,
-    findUserByEmail,
-    createToken,
-    updateToken,
-    findUserById,
-    blacklistToken,
-    isTokenBlacklisted,
-    updateSubscription,
+  createUser,
+  findUserByEmail,
+  createToken,
+  updateToken,
+  findUserById,
+  blacklistToken,
+  isTokenBlacklisted,
+  updateSubscription,
+  updateAvatar,
 };

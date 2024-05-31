@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "multer";
 import validateBody from "../helpers/validateBody.js";
 import {
   userValidationSchema,
@@ -10,8 +11,11 @@ import {
   logout,
   getCurrentUser,
   updateSubscription,
+  updateAvatar,
 } from "../controllers/usersControllers.js";
 import { authenticateToken } from "../helpers/authenticateToken.js";
+
+const upload = multer({dest: 'tmp'})
 
 const usersRouter = express.Router();
 
@@ -28,6 +32,13 @@ usersRouter.patch(
   authenticateToken,
   validateBody(subscriptionValidationSchema),
   updateSubscription
+);
+
+usersRouter.patch(
+  "/avatars",
+  authenticateToken,
+  upload.single("avatar"),
+  updateAvatar
 );
 
 export default usersRouter;
