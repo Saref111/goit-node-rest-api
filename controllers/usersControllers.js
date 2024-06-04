@@ -11,6 +11,8 @@ export const register = async (req, res) => {
     return res.status(409).json({ message: "Email in use" });
   }
   const newUser = await usersService.createUser(email, password);
+  await usersService.sendEmail(newUser);
+
   return res.status(201).json({
     user: { email: newUser.email, subscription: newUser.subscription },
   });
@@ -22,6 +24,11 @@ export const login = async (req, res) => {
   if (!user || !user.validPassword(password)) {
     return res.status(401).json({ message: "Email or password is wrong" });
   }
+
+  if (!user.verify) {
+    return res.status(400).json({ message: "Email is not verified" });
+  }
+
   const token = await usersService.createToken(user);
   return res.status(200).json({
     token,
@@ -72,24 +79,58 @@ export const updateSubscription = async (req, res) => {
 };
 
 export const updateAvatar = async (req, res) => {
-    const user = await usersService.findUserById(req.user._id);
-    if (!user) {
-        return res.status(401).json({ message: "Not authorized" });
-    }
+  const user = await usersService.findUserById(req.user._id);
+  if (!user) {
+    return res.status(401).json({ message: "Not authorized" });
+  }
 
-    if (!req.file) {
-        return res.status(400).json({ message: "No file provided" });
-    }
+  if (!req.file) {
+    return res.status(400).json({ message: "No file provided" });
+  }
 
-    const newAvatarPath = path.join("public", "avatars", req.file.filename + ".jpg").replace(/\\/g, "/");
+  const newAvatarPath = path
+    .join("public", "avatars", req.file.filename + ".jpg")
+    .replace(/\\/g, "/");
 
-    const newAvatar = await Jimp.read(req.file.path)
-    await newAvatar.cover(250, 250)
-        .writeAsync(newAvatarPath);
+  const newAvatar = await Jimp.read(req.file.path);
+  await newAvatar.cover(250, 250).writeAsync(newAvatarPath);
 
-    const updatedUser = await usersService.updateAvatar(user._id, newAvatarPath.replace("public", ""));
-    
-    await fs.unlink(req.file.path);
+  const updatedUser = await usersService.updateAvatar(
+    user._id,
+    newAvatarPath.replace("public", "")
+  );
 
-    return res.status(200).json({ avatarURL: updatedUser.avatarURL });
+  await fs.unlink(req.file.path);
+
+  return res.status(200).json({ avatarURL: updatedUser.avatarURL });
+};
+
+export const verifyEmail = async (req, res) => {
+  const user = await usersService.findUserByVerificationToken(
+    req.params.verificationToken
+  );
+  if (!user || user.verify) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  await usersService.verifyUser(user._id);
+  return res.status(200).json({ message: "Verification successful" });
+};
+
+export const sendVerificationEmail = async (req, res) => {
+  if (!req.body.email) {
+    return res.status(400).json({ message: "missing required field email" });
+  }
+  const user = await usersService.findUserByEmail(req.body.email);
+  
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  if (user.verify) {
+    return res.status(400).json({ message: "Verification has already been passed" });
+  }
+
+  await usersService.sendEmail(user);
+  return res.status(200).json({ message: "Verification email sent" });
 };
